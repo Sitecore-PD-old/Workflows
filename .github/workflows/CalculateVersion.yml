@@ -2,6 +2,11 @@ name: Calculate Version
 
 on:
   workflow_call:
+    outputs:
+      version:
+        description: "Full version string"
+        value: ${{ jobs.CalculateVersion.outputs.version}}
+
 
 jobs:
   CalculateVersion:
