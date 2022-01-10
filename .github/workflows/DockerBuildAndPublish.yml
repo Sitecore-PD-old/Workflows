@@ -2,17 +2,13 @@ name: Build and Publish Docker Container
 
 on:
   workflow_call:
-    inputs:
+    secrets:
       container_registry:
         required: true
-        type: string
       container_registry_user:
         required: true
-        type: string
-    secrets:
       container_registry_pwd:
         required: true
-        type: string
 
 jobs:
   build-and-publish:
