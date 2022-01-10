@@ -25,6 +25,12 @@ jobs:
         run: run-unittests
       - name: Convert report to JUnit format
         run: find . -name '*.trx' -exec trx2junit {} \;
+      - name: Upload Unit Test reports
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Unit Test Results
+          path: testresults/
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
@@ -32,8 +38,3 @@ jobs:
           check_name: "Unit Test Results"
           comment_title: "Unit Test Results"
           files: ./testresults/_*.xml        
-      - name: Upload Unit Test reports
-        uses: actions/upload-artifact@v2
-        with:
-          name: Unit Test Results
-          path: testresults/
