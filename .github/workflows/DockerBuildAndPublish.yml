@@ -13,9 +13,6 @@ on:
 jobs:
   build-and-publish:
     runs-on: docker-cli
-    needs: 
-      - Unittest
-      - CalculateVersion
     steps:
       - uses: actions/checkout@v2
       - name: build
