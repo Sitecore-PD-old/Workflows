@@ -23,10 +23,10 @@ jobs:
           #!/bin/bash
           set -e
 
-          export DOCKER_REGISTRY=${{ inputs.container_registry }}/dotnetsampleapp-service1
+          export DOCKER_REGISTRY=${{ secrets.container_registry }}/dotnetsampleapp-service1
           export TAG="${{needs.CalculateVersion.outputs.version}}"
           docker-compose -f docker-compose.yml build
-          echo "${{ secrets.container_registry_pwd }}" | docker login ${{ inputs.container_registry }} --username "${{ inputs.container_registry_user }}" --password-stdin
+          echo "${{ secrets.container_registry_pwd }}" | docker login ${{ secrets.container_registry }} --username "${{ secrets.container_registry_user }}" --password-stdin
           docker-compose -f docker-compose.yml push
       - name: package Helm artifacts
         uses: actions/upload-artifact@v2
