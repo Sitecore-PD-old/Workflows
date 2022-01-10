@@ -1,0 +1,23 @@
+name: Calculate Version
+
+on:
+  workflow_call:
+
+jobs:
+  CalculateVersion:
+    runs-on: simple-version
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          #simpleversion needs the history to calculate teh version
+          fetch-depth: 0
+      - name: Calculate Version
+        run: calculate-version
+      - name: Store Version
+        id: setversion
+        run: |
+          versioninfo=$(cat version.json)
+          version=$(echo $versioninfo | jq '.formats.Semver2' | sed 's/"//g')
+          echo "::set-output name=version::$version"
+    outputs:
+      version: ${{ steps.setversion.outputs.version }}
