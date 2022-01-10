@@ -5,7 +5,7 @@ on:
     inputs:
       coverage_threshold:
         required: false
-        type: int
+        type: number
         default: 80
       coverage_filter:
         required: false
