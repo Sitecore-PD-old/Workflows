@@ -15,7 +15,7 @@ on:
       container_registry_pwd:
         required: true
 
-Jobs:
+jobs:
   integrationtests:
     runs-on: docker-cli
     steps:
