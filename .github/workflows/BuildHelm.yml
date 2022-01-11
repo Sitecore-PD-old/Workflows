@@ -33,7 +33,7 @@ jobs:
           export PACKAGES="dotnetsampleapp-service1"
           export APPLICATION="helm/dotnetsampleapp-service1"
           export REGISTRY=${{secrets.container_registry}}
-          export REGISTRY_USER=${{secrets.container_registry_pwd}}
-          export REGISTRY_PASSWORD=${{secrets.container_registry_user}}
+          export REGISTRY_USER=${{secrets.container_registry_user}}
+          export REGISTRY_PASSWORD=${{secrets.container_registry_pwd}}
           export CHART_VERSION_NBR="${{ inputs.version}}"
           publish-charts
