@@ -7,6 +7,13 @@ on:
         description: "build version"
         type: string
         required: true
+    secrets:
+      container_registry:
+        required: true
+      container_registry_user:
+        required: true
+      container_registry_pwd:
+        required: true
 
 jobs:
   build-helm:
