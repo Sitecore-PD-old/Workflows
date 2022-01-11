@@ -1,4 +1,4 @@
-name: dotnet Unit Tests
+name: Build heml charts
 
 on:
   workflow_call:
