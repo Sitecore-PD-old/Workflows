@@ -60,7 +60,7 @@ jobs:
         with:
           check_name: "Integration Test Results"
           comment_title: "Integration Test Results"
-          path: test/**/TestResults/
+          files: test/**/TestResults/_*.xml
       - name: Upload Integration Test reports
         uses: actions/upload-artifact@v2
         with:
