@@ -2,6 +2,11 @@ name: Build and Publish Docker Container
 
 on:
   workflow_call:
+    inputs:
+      version:
+        description: "build version"
+        type: string:
+        required: true
     secrets:
       container_registry:
         required: true
@@ -21,7 +26,7 @@ jobs:
           set -e
 
           export DOCKER_REGISTRY=${{ secrets.container_registry }}/dotnetsampleapp-service1
-          export TAG="${{needs.CalculateVersion.outputs.version}}"
+          export TAG="${{ inputs.version}}"
           docker-compose -f docker-compose.yml build
           echo "${{ secrets.container_registry_pwd }}" | docker login ${{ secrets.container_registry }} --username "${{ secrets.container_registry_user }}" --password-stdin
           docker-compose -f docker-compose.yml push

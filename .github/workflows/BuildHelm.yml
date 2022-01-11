@@ -1,0 +1,35 @@
+name: dotnet Unit Tests
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "build version"
+        type: string:
+        required: true
+
+jobs:
+  build-helm:
+    runs-on: helm
+    needs: 
+      - build-and-publish
+      - CalculateVersion
+    steps:
+      - name: Download Helm Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Helm Artifacts
+          path: deploy/
+      - name: build helm and publish
+        run: |
+          #!/bin/bash
+          set -e 
+
+          # Setup variables and call helm chart publish task.
+          export PACKAGES="dotnetsampleapp-service1"
+          export APPLICATION="helm/dotnetsampleapp-service1"
+          export REGISTRY=${secrets.CONTAINER_REGISTRY}
+          export REGISTRY_USER=${secrets.CONTAINER_REGISTRY_PWD}
+          export REGISTRY_PASSWORD=${secrets.CONTAINER_REGISTRY_USER}
+          export CHART_VERSION_NBR="${{ inputs.version}}"
+          publish-charts
