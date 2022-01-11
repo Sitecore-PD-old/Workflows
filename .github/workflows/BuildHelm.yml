@@ -11,9 +11,6 @@ on:
 jobs:
   build-helm:
     runs-on: helm
-    needs: 
-      - build-and-publish
-      - CalculateVersion
     steps:
       - name: Download Helm Artifacts
         uses: actions/download-artifact@v2
