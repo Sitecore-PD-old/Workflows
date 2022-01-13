@@ -1,0 +1,40 @@
+name: dotnet Unit Tests
+
+on:
+  workflow_call:
+    inputs:
+      coverage_threshold:
+        required: false
+        type: number
+        default: 80
+      coverage_filter:
+        required: false
+        type: string
+        default: "-:*Tests"
+
+jobs:
+  Unittest:
+    runs-on: dotnet-5.0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run unit tests
+        env:
+          # test project coverage is not the default 80%
+          COVERAGE_THRESHOLD: ${{ inputs.coverage_threshold }}
+          COVERAGE_FILTER: ${{ inputs.coverage_filter }}
+        run: run-unittests
+      - name: Convert report to JUnit format
+        run: find . -name '*.trx' -exec trx2junit {} \;
+      - name: Upload Unit Test reports
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Unit Test Results
+          path: testresults/
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          check_name: "Unit Test Results"
+          comment_title: "Unit Test Results"
+          files: ./testresults/_*.xml        

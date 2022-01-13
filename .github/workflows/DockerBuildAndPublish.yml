@@ -1,0 +1,37 @@
+name: Build and Publish Docker Container
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "build version"
+        type: string
+        required: true
+    secrets:
+      container_registry:
+        required: true
+      container_registry_user:
+        required: true
+      container_registry_pwd:
+        required: true
+
+jobs:
+  build-and-publish:
+    runs-on: docker-cli
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        run: |
+          #!/bin/bash
+          set -e
+
+          export DOCKER_REGISTRY=${{ secrets.container_registry }}/dotnetsampleapp-service1
+          export TAG="${{ inputs.version}}"
+          docker-compose -f docker-compose.yml build
+          echo "${{ secrets.container_registry_pwd }}" | docker login ${{ secrets.container_registry }} --username "${{ secrets.container_registry_user }}" --password-stdin
+          docker-compose -f docker-compose.yml push
+      - name: package Helm artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Helm Artifacts
+          path: deploy/

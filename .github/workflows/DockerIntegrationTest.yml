@@ -1,0 +1,68 @@
+name: Docker Integration tests
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "build version"
+        type: string
+        required: true
+    secrets:
+      container_registry:
+        required: true
+      container_registry_user:
+        required: true
+      container_registry_pwd:
+        required: true
+
+jobs:
+  integrationtests:
+    runs-on: docker-cli
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Integration tests
+        run: |
+          #!/bin/bash
+          set -e
+          echo GITHUB_RUN_ID=${GITHUB_RUN_ID}
+          echo GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER}
+          echo GITHUB_JOB=${GITHUB_JOB}
+
+          #validate-daemon
+          docker version
+
+          export COMPOSE_PROJECT_NAME=DotnetSampleApp
+          export DOCKER_REGISTRY=${{ secrets.container_registry }}/dotnetsampleapp-service1
+          export TAG="${{inputs.version}}"
+          echo "${{ secrets.container_registry_pwd }}" | docker login ${{ secrets.container_registry }} --username "${{ secrets.container_registry_user }}" --password-stdin
+          docker-compose -f docker-compose.test.yml run sut
+      - name: Upload Integration Test reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: Raw Integration Test Results
+          path: test/**/TestResults/
+  ParseIntegrationtests:
+    runs-on: dotnet-5.0
+    needs: 
+      - integrationtests
+    steps:
+      - name: Download Helm Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Raw Integration Test Results
+          path: test/
+      - name: Convert report to JUnit format
+        run: |
+          find . -name '*.trx' -exec trx2junit {} \;
+      - name: Publish Integation Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          check_name: "Integration Test Results"
+          comment_title: "Integration Test Results"
+          files: test/**/TestResults/_*.xml
+      - name: Upload Integration Test reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: Integration Test Results
+          path: test/

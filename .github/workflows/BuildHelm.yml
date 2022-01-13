@@ -1,0 +1,39 @@
+name: Build heml charts
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "build version"
+        type: string
+        required: true
+    secrets:
+      container_registry:
+        required: true
+      container_registry_user:
+        required: true
+      container_registry_pwd:
+        required: true
+
+jobs:
+  build-helm:
+    runs-on: helm
+    steps:
+      - name: Download Helm Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Helm Artifacts
+          path: deploy/
+      - name: build helm and publish
+        run: |
+          #!/bin/bash
+          set -e 
+
+          # Setup variables and call helm chart publish task.
+          export PACKAGES="dotnetsampleapp-service1"
+          export APPLICATION="helm/dotnetsampleapp-service1"
+          export REGISTRY=${{secrets.container_registry}}
+          export REGISTRY_USER=${{secrets.container_registry_user}}
+          export REGISTRY_PASSWORD=${{secrets.container_registry_pwd}}
+          export CHART_VERSION_NBR="${{ inputs.version}}"
+          publish-charts
